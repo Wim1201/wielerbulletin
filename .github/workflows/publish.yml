@@ -21,6 +21,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
@@ -38,10 +39,20 @@ jobs:
             mkdir -p store/audio
           fi
 
-      - name: Installeer ffmpeg en Python-pakketten
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
-          pip install -q -r scripts/requirements.txt
+      # apt-get was extremely slow on the runner (15 min); a prebuilt ffmpeg takes seconds
+      - name: Installeer ffmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          ffmpeg-version: release
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Installeer Python-pakketten
+        run: pip install -q -r scripts/requirements.txt
 
       - name: Maak audio met ElevenLabs
         env:
