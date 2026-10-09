@@ -1,5 +1,5 @@
 // Service worker: app shell offline, always-fresh feed, audio straight from the network.
-const SHELL = "wb-shell-v2";
+const SHELL = "wb-shell-v3";
 const SHELL_FILES = ["./", "index.html", "app.css", "app.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 

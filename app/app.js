@@ -13,7 +13,16 @@
   const scrub = $("scrub");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // canvas colours follow the CSS theme (team yellow, or club gold in the special)
   const COLORS = { yellow: "#FFDD00", honey: "#D9B500", black: "#000000", chalk: "#F4F2E6" };
+  function syncThemeColors() {
+    const cs = getComputedStyle(app);
+    COLORS.yellow = cs.getPropertyValue("--yellow").trim() || COLORS.yellow;
+    const honey = cs.getPropertyValue("--honey").trim();
+    // the CSS honey is a touch light for the unplayed wave; darken the daily one slightly
+    COLORS.honey = app.dataset.kind === "special" ? honey : "#D9B500";
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", COLORS.yellow);
+  }
   const RATES = [1, 1.25, 1.5];
 
   let episodes = [];
@@ -171,6 +180,7 @@
       ? `${ep.label}, ${fmtDay(ep.date, false)}`
       : isToday ? `Vandaag, ${fmtDay(ep.date, false)}` : fmtDay(ep.date);
     app.dataset.kind = isDaily(ep) ? "dagelijks" : "special";
+    syncThemeColors();
     $("dateline").setAttribute("datetime", ep.date);
     $("headline").textContent = ep.title;
     $("summary").textContent = ep.summary || "";
@@ -186,6 +196,7 @@
       b.addEventListener("click", () => { seek(ch.start); if (audio.paused) play(); });
       li.dataset.idx = idx;
       if (ch.level === 3) li.classList.add("sub");
+      if (/jonge renner/i.test(ch.title)) li.classList.add("club");
       li.append(b);
       return li;
     }));

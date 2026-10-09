@@ -8,6 +8,11 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Wijziging 09-10-2026, 21:00: special in clubkleuren De Jonge Renner
+
+- **Bron kleuren**: tenue 2026 zwart met goud (gemeten uit shirtafbeelding op dejongerenner.nl/kleding-2023/, ca. `#B08C40`); clubsite groen `#418648`. Historisch blauw-wit (1936) en rood-wit (1981), niet gebruikt.
+- **App**: bij een special (`data-kind="special"`) worden teamgeel/honing goud `#C9A24C` / `#9C7A33`; golfvorm en adresbalkkleur volgen mee. Clubonderdelen ("WV De Jonge Renner") krijgen een groen wieltje in plaats van het honingraatje. Label "Vrijdagspecial" in het archief is goud. Dagelijks bulletin ongewijzigd geel. Cache `wb-shell-v3`.
+
 ## Wijziging 09-10-2026, 20:40: De Jonge Renner als rode draad in de special
 
 - **Op verzoek van Wim**: WV De Jonge Renner (Oosterhout, sponsornaam JEGG-SKIL-DJR) krijgt in de vrijdagspecial dezelfde rol als Visma | Lease a Bike in het dagelijkse bulletin: subkop `### WV De Jonge Renner` onder elk onderwerp waar de club bij betrokken is.
