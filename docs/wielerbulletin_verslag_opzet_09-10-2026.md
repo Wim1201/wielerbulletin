@@ -8,6 +8,14 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Wijziging 09-10-2026, 20:40: De Jonge Renner als rode draad in de special
+
+- **Op verzoek van Wim**: WV De Jonge Renner (Oosterhout, sponsornaam JEGG-SKIL-DJR) krijgt in de vrijdagspecial dezelfde rol als Visma | Lease a Bike in het dagelijkse bulletin: subkop `### WV De Jonge Renner` onder elk onderwerp waar de club bij betrokken is.
+- **Privacyregel (eigen keuze Claude, ter beoordeling door Wim)**: geen namen van renners van twaalf jaar of jonger in de podcast, ook al staan ze op de clubsite; alleen leeftijdscategorie en prestatie. Vanaf nieuwelingen wel namen.
+- **Special 09-10-2026 herschreven**: dubbel brons op het Nederlands clubkampioenschap (elite 51:52, junioren 37:49), Maarten Tjallingii ploegleider junioren, WBVC-jeugdcrossen Rucphen en Bergen op Zoom. Zele-kermiskoers en details gravel-WK ingekort. 743 woorden.
+- **Correctie op eerdere tekst**: het clubkampioenschap was een ploegentijdrit (A-categorie 46,19 km, junioren 31,92 km); de tweede plaatsen waren De Amstel (A) en Willibrord Wil Vooruit (junioren). Bron: dejongerenner.nl, 03-10-2026.
+- **Vrijdagtaak** bijgewerkt (`trig_01Mnsx2eke7Rfd3u24VMrdgh`): 600–800 woorden, clubsite altijd ophalen, aanvullend zoeken naar clubrenners elders.
+
 ## Correctie 09-10-2026, 20:30: Nederlandse bronnen gevonden
 
 Eerder vermoeden ("Nederlands clubnieuws blijft mager") is grotendeels achterhaald. Getest met WebFetch:
