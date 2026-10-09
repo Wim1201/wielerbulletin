@@ -41,6 +41,13 @@ PEAK_COUNT = 240
 SAMPLE_RATE = 44100
 
 
+def annotate(message: str) -> None:
+    """Print an error; on GitHub Actions it also shows as a run annotation."""
+    print(f"! {message}", file=sys.stderr)
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        print(f"::error::{message}")
+
+
 # ---------------------------------------------------------------- parsing
 
 def parse_episode(path: Path) -> dict:
@@ -238,6 +245,14 @@ def main() -> int:
     ap.add_argument("--today", help="override today's date (YYYY-MM-DD) for testing")
     args = ap.parse_args()
 
+    if not args.fake_tts:
+        missing = [k for k in ("ELEVENLABS_API_KEY", "ELEVENLABS_VOICE_ID")
+                   if not os.environ.get(k, "").strip()]
+        if missing:
+            annotate("Secret ontbreekt of is leeg: " + ", ".join(missing)
+                     + " (Settings > Secrets and variables > Actions)")
+            return 1
+
     today = dt.date.fromisoformat(args.today) if args.today else dt.date.today()
     cutoff = today - dt.timedelta(days=KEEP_DAYS - 1)
     store = Path(args.store)
@@ -249,7 +264,7 @@ def main() -> int:
         try:
             ep = parse_episode(path)
         except ValueError as exc:
-            print(f"! {exc}", file=sys.stderr)
+            annotate(str(exc))
             failures += 1
             continue
         if dt.date.fromisoformat(ep["date"]) < cutoff:
@@ -257,7 +272,7 @@ def main() -> int:
         try:
             meta = render_episode(ep, audio_dir, args.fake_tts)
         except Exception as exc:  # keep older episodes publishable
-            print(f"! {ep['date']}: {exc}", file=sys.stderr)
+            annotate(f"{ep['date']}: {exc}")
             failures += 1
             continue
         feed.append({
