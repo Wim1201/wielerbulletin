@@ -1,0 +1,81 @@
+# Renders new episode scripts with ElevenLabs and publishes app + audio to GitHub Pages.
+# Audio lives on the orphan branch "audio" (force-pushed, last 14 days only),
+# so the repository does not grow by a few MB every day.
+name: Publiceer Wielerbulletin
+
+on:
+  push:
+    branches: [main]
+    paths: ["episodes/**", "app/**", "scripts/**", ".github/workflows/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: wielerbulletin-publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Haal audio-opslag op
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git ls-remote --exit-code --heads origin audio >/dev/null; then
+            git clone --depth 1 --branch audio \
+              "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" store
+          else
+            mkdir -p store/audio
+          fi
+
+      - name: Installeer ffmpeg en Python-pakketten
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q -r scripts/requirements.txt
+
+      - name: Maak audio met ElevenLabs
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          ELEVENLABS_MODEL: ${{ vars.ELEVENLABS_MODEL || 'eleven_v4' }}
+          TZ: Europe/Amsterdam
+        run: python scripts/build_episodes.py --episodes episodes --store store
+
+      - name: Bewaar audio-opslag
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd store
+          rm -rf .git
+          git init -q -b audio
+          git config user.name "wielerbulletin-bot"
+          git config user.email "wielerbulletin-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Audio bijgewerkt $(date +%d-%m-%Y)"
+          git push -q --force \
+            "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" audio
+
+      - name: Stel site samen
+        run: |
+          mkdir -p _site
+          cp -r app/. _site/
+          cp -r store/audio _site/audio
+          cp store/feed.json _site/feed.json
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4

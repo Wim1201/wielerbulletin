@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wielerbulletin</title>
+  <meta name="description" content="Elke ochtend om acht uur vijf minuten wielernieuws.">
+  <meta name="theme-color" content="#FFDD00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Bulletin">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <main class="app" id="app" data-state="loading">
+    <section class="stage" aria-label="Aflevering van vandaag">
+      <div class="hatch" aria-hidden="true"></div>
+      <header class="masthead">
+        <span class="wordmark">Wielerbulletin</span>
+        <time class="dateline" id="dateline"></time>
+      </header>
+      <h1 class="headline" id="headline">Het bulletin wordt geladen</h1>
+      <p class="summary" id="summary"></p>
+
+      <div class="seam" id="seam">
+        <canvas id="wave" aria-hidden="true"></canvas>
+        <input class="scrub" id="scrub" type="range" min="0" max="1000" value="0" step="1"
+               aria-label="Positie in de aflevering">
+      </div>
+    </section>
+
+    <section class="deck" aria-label="Speler">
+      <div class="transport">
+        <button class="play" id="play" type="button" aria-label="Afspelen" disabled>
+          <span class="pulse" aria-hidden="true"></span>
+          <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg>
+        </button>
+        <div class="clock" aria-live="off">
+          <span class="now" id="now">0:00</span>
+          <span class="total" id="total">van 0:00</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button type="button" class="ctl" id="back" aria-label="15 seconden terug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg><span>15</span>
+        </button>
+        <button type="button" class="ctl rate" id="rate" aria-label="Afspeelsnelheid">1×</button>
+        <button type="button" class="ctl" id="fwd" aria-label="15 seconden vooruit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z"/></svg><span>15</span>
+        </button>
+      </div>
+
+      <h2 class="section-title">In dit bulletin</h2>
+      <ol class="chapters" id="chapters"></ol>
+
+      <h2 class="section-title">Eerdere bulletins</h2>
+      <ul class="archive" id="archive"></ul>
+
+      <p class="footnote" id="footnote">Elke ochtend om acht uur een nieuw bulletin.</p>
+    </section>
+  </main>
+
+  <audio id="audio" preload="metadata"></audio>
+  <script src="app.js"></script>
+</body>
+</html>
