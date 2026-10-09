@@ -17,6 +17,7 @@ Eerder vermoeden ("Nederlands clubnieuws blijft mager") is grotendeels achterhaa
 | cyclingonline.nl | **Werkt**, actief (dagelijks) | Clubkampioenschappen, NK gravel, Hondsrug Classic, crossen; categorieën `offroad,6`, `nederlandse_kampioenschappen,14`, `track,7` |
 | rodi.nl (losse artikelen) | Werkt | Lokaal clubnieuws Noord- en Zuid-Holland, bijv. NK BMX per leeftijdsklasse |
 | omroepbrabant.nl (losse artikelen) | Werkt | Bijv. NK BMX; sportpagina vooral toppers |
+| dejongerenner.nl (WV De Jonge Renner, Oosterhout) | **Werkt**, meerdere keren per week bijgewerkt | Jeugd, nieuwelingen, junioren, elite/beloften, West-Brabantse jeugdcrossen, eigen koersen. Op verzoek van Wim (09-10-2026, 20:30) vaste bron in de vrijdagtaak. |
 | nhnieuws.nl | Werkt | Weinig wielernieuws |
 | cyclingonline.info (uitslagenplatform) | Geblokkeerd | Uitslagen via cyclingonline.nl-artikelen |
 | L1, RTV Oost, Omroep Gelderland, RTV Noord, Omroep Zeeland | Geblokkeerd | Alleen via zoekresultaten |
