@@ -8,6 +8,17 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Stand 09-10-2026, 17:15: live
+
+- **Eerste aflevering gepubliceerd** (run #4, groen). Duur 4:40, model `eleven_v4`, stem Emma (Calm, Clear and Confident, Standaard-Nederlands). App: https://wim1201.github.io/wielerbulletin/
+- **Run #1 tot en met #3 gefaald**, opgelost:
+  - #1: `apt-get install ffmpeg` duurde 15 min, daarna ontbraken de secrets nog. Workflow gebruikt nu `FedericoCarboni/setup-ffmpeg@v3` (6 s) en heeft `timeout-minutes: 20`.
+  - #2: secrets nog niet ingesteld.
+  - #3: API-sleutel miste het recht `text_to_speech`. Door Wim in ElevenLabs aangepast.
+- **Diagnose**: fouten van het script verschijnen nu als annotatie bij de run, zodat ze zonder inloggen leesbaar zijn via de GitHub API.
+- **Spreektempo**: v4 met Emma doet ca. 17 tekens per seconde; 4.300 tekens = 4:40 inclusief pauzes.
+- **Credits**: ElevenLabs-tegoed op 09-10-2026 ca. 89.600. Bij ~5.000 tekens per dag is dat krap; maandtegoed nog te controleren.
+
 ## Correcties en wijzigingen (09-10-2026, 15:35)
 
 - **Inhoud gewijzigd op verzoek van Wim**: Visma | Lease a Bike is de rode draad. Per onderwerp volgt een subkop `### Visma | Lease a Bike` met selectie, opstelling en teamnieuws. Elke koers van vandaag of morgen krijgt starttijd, parcours, historie, favorieten en tv-uitzending.
@@ -21,8 +32,8 @@
 | Onderdeel | Stand |
 |---|---|
 | PWA (`app/`) | Gebouwd en getest in headless Chromium met testaudio (390 × 844). Afspelen, hoofdstukken, archief, snelheid, ±15 s werken. Op een echte iPhone nog niet getest. |
-| Pijplijn (`scripts/build_episodes.py`) | Getest met `--fake-tts`: 7 hoofdstukken, hoofdstuktijden, golfvorm, overslaan van bestaande afleveringen en opschonen na 14 dagen werken. Met de echte ElevenLabs-API nog niet gedraaid. |
-| Workflow (`.github/workflows/publish.yml`) | Geschreven, nog niet gedraaid (repo bestaat nog niet). |
+| Pijplijn (`scripts/build_episodes.py`) | Getest met `--fake-tts`: 7 hoofdstukken, hoofdstuktijden, golfvorm, overslaan van bestaande afleveringen en opschonen na 14 dagen werken. Met de echte ElevenLabs-API gedraaid op 09-10-2026: 4:40, hoofdstuktijden correct. |
+| Workflow (`.github/workflows/publish.yml`) | Draait; run #4 op 09-10-2026 groen. |
 | Eerste aflevering | `episodes/2026-10-09.md`, ca. 685 woorden, 7 hoofdstukken en 2 Visma-subhoofdstukken. |
 | Geplande taak | `trig_019VJgxZDmvSEiYWn5Ex2eTK`, dagelijks 07:45 Europe/Amsterdam, automatisch goedkeuren, pushmelding aan. Eerste run 10-10-2026 07:45. |
 
