@@ -39,11 +39,28 @@ jobs:
             mkdir -p store/audio
           fi
 
-      # apt-get was extremely slow on the runner (15 min); a prebuilt ffmpeg takes seconds
+      # ffmpeg: three routes, so one flaky download site cannot block the daily bulletin.
+      # 1) prebuilt ffmpeg from GitHub releases, 2) setup-ffmpeg action, 3) apt-get (slow, last resort)
       - name: Installeer ffmpeg
+        id: ffmpeg1
+        continue-on-error: true
+        uses: AnimMouse/setup-ffmpeg@v1
+
+      - name: Installeer ffmpeg (reserve 1)
+        id: ffmpeg2
+        if: steps.ffmpeg1.outcome == 'failure'
+        continue-on-error: true
         uses: FedericoCarboni/setup-ffmpeg@v3
-        with:
-          ffmpeg-version: release
+
+      - name: Installeer ffmpeg (reserve 2)
+        if: steps.ffmpeg1.outcome == 'failure' && steps.ffmpeg2.outcome == 'failure'
+        timeout-minutes: 12
+        run: |
+          sudo apt-get install -y -qq --no-install-recommends ffmpeg \
+            || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg)
+
+      - name: Controleer ffmpeg
+        run: ffmpeg -version | head -1 && ffprobe -version | head -1
 
       - uses: actions/setup-python@v5
         with:
