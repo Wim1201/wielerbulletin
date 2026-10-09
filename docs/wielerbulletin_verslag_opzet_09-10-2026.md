@@ -8,6 +8,23 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Correctie 09-10-2026, 20:30: Nederlandse bronnen gevonden
+
+Eerder vermoeden ("Nederlands clubnieuws blijft mager") is grotendeels achterhaald. Getest met WebFetch:
+
+| Bron (NL) | Stand | Wat erin staat |
+|---|---|---|
+| cyclingonline.nl | **Werkt**, actief (dagelijks) | Clubkampioenschappen, NK gravel, Hondsrug Classic, crossen; categorieën `offroad,6`, `nederlandse_kampioenschappen,14`, `track,7` |
+| rodi.nl (losse artikelen) | Werkt | Lokaal clubnieuws Noord- en Zuid-Holland, bijv. NK BMX per leeftijdsklasse |
+| omroepbrabant.nl (losse artikelen) | Werkt | Bijv. NK BMX; sportpagina vooral toppers |
+| nhnieuws.nl | Werkt | Weinig wielernieuws |
+| cyclingonline.info (uitslagenplatform) | Geblokkeerd | Uitslagen via cyclingonline.nl-artikelen |
+| L1, RTV Oost, Omroep Gelderland, RTV Noord, Omroep Zeeland | Geblokkeerd | Alleen via zoekresultaten |
+| sportfoto.substack.com (CyclingOnline Oost) | Inactief sinds 06-2025 | – |
+
+- Vrijdagspecial 09-10-2026 aangevuld met: Nederlandse clubkampioenschappen Biddinghuizen (03-10), Hondsrug Classic (04-10), EK veldrijden Zeddam (07/08-11). Ca. 640 woorden, opnieuw ingesproken.
+- Bronnenlijst in `trig_01Mnsx2eke7Rfd3u24VMrdgh` bijgewerkt.
+
 ## Vrijdagspecial toegevoegd (09-10-2026, 20:15)
 
 - **Wat**: wekelijkse special over niet-professioneel wielrennen in NL en BE (jeugd, junioren, beloften en elite zonder contract, clubs, masters, vrouwen; weg, veld, MTB, baan, BMX, gravel; tot provinciaal niveau). Bestandsnaam `episodes/<datum>-vrijdagspecial.md`, front matter `kind: special`, `label: Vrijdagspecial`.
