@@ -8,6 +8,27 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Vrijdagspecial toegevoegd (09-10-2026, 20:15)
+
+- **Wat**: wekelijkse special over niet-professioneel wielrennen in NL en BE (jeugd, junioren, beloften en elite zonder contract, clubs, masters, vrouwen; weg, veld, MTB, baan, BMX, gravel; tot provinciaal niveau). Bestandsnaam `episodes/<datum>-vrijdagspecial.md`, front matter `kind: special`, `label: Vrijdagspecial`.
+- **Geplande taak**: `trig_01Mnsx2eke7Rfd3u24VMrdgh`, vrijdag 07:25 Europe/Amsterdam, automatisch goedkeuren, pushmelding aan. Eerste run 16-10-2026.
+- **Dagelijkse taak** (`trig_019VJgxZDmvSEiYWn5Ex2eTK`): prompt aangevuld met `git pull --rebase` vóór push, omdat beide taken op vrijdag naar main pushen.
+- **Pijplijn**: afleveringen hebben een eigen id (bestandsnaam); specials blijven 56 dagen staan, dagelijkse 14. De run faalt als een aflevering van vandaag niet lukt; oude audio blijft staan als een her-render faalt.
+- **App**: archief toont een geel label bij specials; de speler opent standaard het dagelijkse bulletin. Service-worker-cache naar `wb-shell-v2`.
+- **Eerste special**: `episodes/2026-10-09-vrijdagspecial.md`, ca. 500 woorden.
+
+### Bronnen voor de special: wat werkt en wat niet
+
+| Bron | Stand 09-10-2026 |
+|---|---|
+| cyclingsite.be | Werkt; Belgische jeugd-, junioren-, nieuwelingen- en kermiskoersen. Data staan niet altijd bij de berichten. |
+| veldritkrant.be | Werkt; veldritkalender en uitslagen. |
+| sporza.be, wielerflits.nl, nos.nl | Werken; weinig nieuws onder nationaal niveau. |
+| knwu.nl, dewielersite.net | Weigeren de ophaaltool (robots.txt). |
+| cyclingvlaanderen.be | **Niet gebruiken**: stuurde door naar een onbekende reclamesite. |
+
+**Vermoeden, niet vastgesteld**: Nederlands nieuws op club- en jeugdniveau zal mager blijven zolang KNWU en dewielersite niet leesbaar zijn. De eerste special heeft daardoor vrijwel alleen Belgische uitslagen.
+
 ## Stand 09-10-2026, 17:15: live
 
 - **Eerste aflevering gepubliceerd** (run #4, groen). Duur 4:40, model `eleven_v4`, stem Emma (Calm, Clear and Confident, Standaard-Nederlands). App: https://wim1201.github.io/wielerbulletin/

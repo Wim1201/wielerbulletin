@@ -211,6 +211,17 @@ button { font: inherit; color: inherit; }
 .archive .len { grid-row: 1 / 3; grid-column: 2; align-self: center; color: var(--mute);
   font-variant-numeric: tabular-nums; font-size: .9rem; }
 .archive .t { font-weight: 600; line-height: 1.3; }
+/* label for specials, e.g. the weekly Friday special */
+.archive .tag {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 8px 2px;
+  border-radius: 10px;
+  background: var(--yellow);
+  color: var(--black);
+  font-weight: 700;
+  font-size: .78rem;
+}
 .archive .active .t { color: var(--yellow); }
 .archive .heard .t { color: var(--mute); font-weight: 500; }
 .archive:empty::after {

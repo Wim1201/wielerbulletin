@@ -33,6 +33,12 @@
   const positions = store.get("wb.positions", {});
   const heard = new Set(store.get("wb.heard", []));
 
+  /* ---------- episode helpers ---------- */
+  // id is unique per episode (a Friday has the bulletin plus the special); older feeds only had date
+  const keyOf = (ep) => ep.id || ep.date;
+  const isDaily = (ep) => (ep.kind || "dagelijks") === "dagelijks";
+  const mainEpisode = (list) => list.find(isDaily) || list[0];
+
   /* ---------- formatting ---------- */
   const fmtTime = (s) => {
     s = Math.max(0, Math.floor(s || 0));
@@ -161,7 +167,10 @@
   function renderEpisode() {
     const ep = current;
     const isToday = ep.date === todayIso();
-    $("dateline").textContent = isToday ? `Vandaag, ${fmtDay(ep.date, false)}` : fmtDay(ep.date);
+    $("dateline").textContent = ep.label
+      ? `${ep.label}, ${fmtDay(ep.date, false)}`
+      : isToday ? `Vandaag, ${fmtDay(ep.date, false)}` : fmtDay(ep.date);
+    app.dataset.kind = isDaily(ep) ? "dagelijks" : "special";
     $("dateline").setAttribute("datetime", ep.date);
     $("headline").textContent = ep.title;
     $("summary").textContent = ep.summary || "";
@@ -189,11 +198,18 @@
     const list = $("archive");
     list.replaceChildren(...episodes.filter((e) => e !== current).map((ep) => {
       const li = document.createElement("li");
-      if (heard.has(ep.date)) li.className = "heard";
+      if (heard.has(keyOf(ep))) li.className = "heard";
       const b = document.createElement("button");
       b.type = "button";
       b.innerHTML = `<span class="day"></span><span class="t"></span><span class="len"></span>`;
-      b.querySelector(".day").textContent = fmtDay(ep.date);
+      const day = b.querySelector(".day");
+      if (ep.label) {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = ep.label;
+        day.append(tag, " ");
+      }
+      day.append(fmtDay(ep.date));
       b.querySelector(".t").textContent = ep.title;
       b.querySelector(".len").textContent = fmtTime(ep.duration);
       b.addEventListener("click", () => {
@@ -244,7 +260,7 @@
     current = ep;
     audio.src = ep.audio;
     audio.playbackRate = store.get("wb.rate", 1);
-    const resume = positions[ep.date];
+    const resume = positions[keyOf(ep)];
     if (resume && resume < ep.duration - 5) {
       audio.addEventListener("loadedmetadata", () => { audio.currentTime = resume; }, { once: true });
     }
@@ -267,9 +283,9 @@
 
   function savePosition() {
     if (!current) return;
-    positions[current.date] = Math.floor(audio.currentTime);
-    // keep only the last few weeks
-    for (const k of Object.keys(positions)) if (!episodes.some((e) => e.date === k)) delete positions[k];
+    positions[keyOf(current)] = Math.floor(audio.currentTime);
+    // keep only episodes that are still in the feed
+    for (const k of Object.keys(positions)) if (!episodes.some((e) => keyOf(e) === k)) delete positions[k];
     store.set("wb.positions", positions);
   }
 
@@ -278,7 +294,7 @@
     navigator.mediaSession.metadata = new MediaMetadata({
       title: current.title,
       artist: "Wielerbulletin",
-      album: fmtDay(current.date),
+      album: current.label ? `${current.label}, ${fmtDay(current.date)}` : fmtDay(current.date),
       artwork: [
         { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" },
         { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -360,9 +376,9 @@
   audio.addEventListener("loadedmetadata", updatePositionState);
   audio.addEventListener("ratechange", updatePositionState);
   audio.addEventListener("ended", () => {
-    heard.add(current.date);
+    heard.add(keyOf(current));
     store.set("wb.heard", [...heard]);
-    positions[current.date] = 0;
+    positions[keyOf(current)] = 0;
     store.set("wb.positions", positions);
     renderArchive();
   });
@@ -395,8 +411,8 @@
       $("dateline").textContent = fmtDay(todayIso());
       return;
     }
-    load(episodes[0]);
-    if (episodes[0].date !== todayIso() && new Date().getHours() >= 8) {
+    load(mainEpisode(episodes));
+    if (!episodes.some((e) => isDaily(e) && e.date === todayIso()) && new Date().getHours() >= 8) {
       $("footnote").textContent = "Het bulletin van vandaag is nog niet binnen. Je hoort hierboven het meest recente.";
     }
   }
@@ -406,9 +422,14 @@
     if (document.visibilityState !== "visible" || !audio.paused) return;
     try {
       const feed = await (await fetch(`feed.json?t=${Date.now()}`, { cache: "no-store" })).json();
-      if (feed.episodes?.[0] && feed.episodes[0].date !== episodes[0]?.date) {
+      const next = feed.episodes?.length ? mainEpisode(feed.episodes) : null;
+      if (next && (!episodes.length || keyOf(next) !== keyOf(mainEpisode(episodes))
+                   || feed.episodes.length !== episodes.length)) {
+        const wasCurrent = current;
         episodes = feed.episodes;
-        load(episodes[0]);
+        // keep listening to a special if that is open; otherwise jump to the new bulletin
+        if (wasCurrent && !isDaily(wasCurrent) && episodes.some((e) => keyOf(e) === keyOf(wasCurrent))) renderArchive();
+        else load(next);
       }
     } catch { /* offline: keep what we have */ }
   });

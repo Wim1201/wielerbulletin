@@ -36,6 +36,8 @@ import numpy as np
 API_BASE = "https://api.elevenlabs.io/v1"
 DEFAULT_MODEL = "eleven_v4"
 KEEP_DAYS = int(os.environ.get("KEEP_DAYS", "14"))
+# Specials (e.g. the weekly Friday special) are kept longer than the daily bulletin.
+KEEP_DAYS_SPECIAL = int(os.environ.get("KEEP_DAYS_SPECIAL", "56"))
 PAUSE_SECONDS = 0.8
 PEAK_COUNT = 240
 SAMPLE_RATE = 44100
@@ -86,8 +88,12 @@ def parse_episode(path: Path) -> dict:
 
     date = meta.get("date") or path.stem
     dt.date.fromisoformat(date)  # validate
+    kind = meta.get("kind", "dagelijks")
     return {
+        "id": path.stem,              # unique per episode, also with two on one day
         "date": date,
+        "kind": kind,
+        "label": meta.get("label", ""),
         "title": meta.get("title", f"Wielerbulletin {date}"),
         "summary": meta.get("summary", ""),
         "chapters": chapters,
@@ -204,15 +210,15 @@ def waveform_peaks(path: Path, count: int = PEAK_COUNT) -> list[float]:
 # ---------------------------------------------------------------- build
 
 def render_episode(ep: dict, audio_dir: Path, fake: bool) -> dict:
-    mp3 = audio_dir / f"{ep['date']}.mp3"
-    meta_path = audio_dir / f"{ep['date']}.json"
+    mp3 = audio_dir / f"{ep['id']}.mp3"
+    meta_path = audio_dir / f"{ep['id']}.json"
     if mp3.exists() and meta_path.exists():
         meta = json.loads(meta_path.read_text())
         if meta.get("hash") == ep["hash"]:
-            print(f"= {ep['date']}: up to date")
+            print(f"= {ep['id']}: up to date")
             return meta
 
-    print(f"+ {ep['date']}: rendering {len(ep['chapters'])} chapters"
+    print(f"+ {ep['id']}: rendering {len(ep['chapters'])} chapters"
           f" ({sum(len(c['text']) for c in ep['chapters'])} chars)")
     tts = tts_fake if fake else tts_elevenlabs
     with tempfile.TemporaryDirectory() as tmp:
@@ -255,38 +261,50 @@ def main() -> int:
 
     today = dt.date.fromisoformat(args.today) if args.today else dt.date.today()
     cutoff = today - dt.timedelta(days=KEEP_DAYS - 1)
+    cutoff_special = today - dt.timedelta(days=KEEP_DAYS_SPECIAL - 1)
     store = Path(args.store)
     audio_dir = store / "audio"
     audio_dir.mkdir(parents=True, exist_ok=True)
 
-    feed, failures = [], 0
+    feed = []
+    protect: set[str] = set()   # ids whose render failed: keep their old audio
+    failed_today = 0      # episodes dated today (or unparseable) that could not be built
     for path in sorted(Path(args.episodes).glob("*.md"), reverse=True):
         try:
             ep = parse_episode(path)
         except ValueError as exc:
             annotate(str(exc))
-            failures += 1
+            failed_today += 1
             continue
-        if dt.date.fromisoformat(ep["date"]) < cutoff:
+        limit = cutoff if ep["kind"] == "dagelijks" else cutoff_special
+        if dt.date.fromisoformat(ep["date"]) < limit:
             continue
         try:
             meta = render_episode(ep, audio_dir, args.fake_tts)
         except Exception as exc:  # keep older episodes publishable
-            annotate(f"{ep['date']}: {exc}")
-            failures += 1
+            annotate(f"{ep['id']}: {exc}")
+            protect.add(ep["id"])
+            if ep["date"] == today.isoformat():
+                failed_today += 1
             continue
         feed.append({
+            "id": ep["id"],
             "date": ep["date"],
+            "kind": ep["kind"],
+            "label": ep["label"],
             "title": ep["title"],
             "summary": ep["summary"],
-            "audio": f"audio/{ep['date']}.mp3?v={meta['hash']}",
+            "audio": f"audio/{ep['id']}.mp3?v={meta['hash']}",
             "duration": meta["duration"],
             "chapters": meta["chapters"],
             "peaks": meta["peaks"],
         })
 
+    # Newest first; on a day with two episodes the daily bulletin comes first.
+    feed.sort(key=lambda e: (e["date"], e["kind"] == "dagelijks"), reverse=True)
+
     # Prune audio that fell out of the window.
-    keep = {e["date"] for e in feed}
+    keep = {e["id"] for e in feed} | protect
     for f in audio_dir.iterdir():
         if f.stem not in keep:
             f.unlink()
@@ -297,8 +315,9 @@ def main() -> int:
         "episodes": feed,
     }, ensure_ascii=False, indent=1))
     print(f"feed.json: {len(feed)} episodes")
-    # Fail the run only if today's episode could not be built.
-    return 1 if failures and not any(e["date"] == today.isoformat() for e in feed) else 0
+    # Fail the run (and notify) if any of today's episodes could not be built;
+    # older episodes that fail are logged but do not block publishing.
+    return 1 if failed_today else 0
 
 
 if __name__ == "__main__":

@@ -50,6 +50,6 @@ python scripts/build_episodes.py --episodes episodes --store store --fake-tts
 | Pad | Inhoud |
 |---|---|
 | `app/` | De PWA: `index.html`, `app.css`, `app.js`, `sw.js`, manifest en iconen |
-| `episodes/` | Eén script per dag; `## `-koppen worden hoofdstukken, `### Visma \| Lease a Bike` wordt een subhoofdstuk |
+| `episodes/` | Eén script per dag (`<datum>.md`) plus op vrijdag de special (`<datum>-vrijdagspecial.md`); `## `-koppen worden hoofdstukken, `### `-koppen subhoofdstukken |
 | `scripts/build_episodes.py` | Tekst → audio → `feed.json` |
 | `.github/workflows/publish.yml` | Bouwt en publiceert bij elke push |
