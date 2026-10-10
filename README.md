@@ -6,11 +6,15 @@ Elke ochtend om acht uur vijf minuten wielernieuws, voorgelezen als zakelijk nie
 
 | Tijd | Wie | Wat |
 |---|---|---|
-| 07:45 | Geplande Claude-taak | Zoekt het wielernieuws, schrijft `episodes/<datum>.md` en pusht dat naar `main` |
-| ± 07:50 | GitHub Action `publish.yml` | Spreekt elk hoofdstuk in met ElevenLabs (`eleven_v4`), voegt samen, berekent hoofdstuktijden en golfvorm, schrijft `feed.json` en publiceert naar GitHub Pages |
+| 07:35 (zomertijd) | GitHub Action `write.yml` | Zoekt via de Anthropic API (web search en web fetch) het wielernieuws en schrijft `episodes/<datum>.md`; op vrijdag ook `episodes/<datum>-vrijdagspecial.md`. Commit en pusht. |
+| ± 07:45 | `publish.yml` (aangeroepen door `write.yml`) | Spreekt elk hoofdstuk in met ElevenLabs (`eleven_v4`), voegt samen, berekent hoofdstuktijden en golfvorm, schrijft `feed.json` en publiceert naar GitHub Pages |
 | 08:00 | De app | Haalt `feed.json` op en zet het nieuwe bulletin klaar |
 
-De ElevenLabs-sleutel staat alleen als secret in GitHub; Claude ziet hem nooit. De audio staat op de aparte branch `audio` (alleen de laatste 14 dagen, telkens overschreven), zodat de repository niet dagelijks megabytes groeit.
+De ElevenLabs- en Anthropic-sleutels staan alleen als secret in GitHub.
+
+GitHub start geplande runs soms 5 tot 20 minuten later dan de cron-tijd. In de wintertijd draait `write.yml` een uur eerder (06:35), omdat de cron-tijd in UTC staat.
+
+Zelf een script schrijven of corrigeren kan altijd: zet het bestand in `episodes/` en push. Bestaat het bestand van vandaag al, dan slaat `write.yml` het over. De audio staat op de aparte branch `audio` (alleen de laatste 14 dagen, telkens overschreven), zodat de repository niet dagelijks megabytes groeit.
 
 ## Eenmalig instellen
 
@@ -52,4 +56,7 @@ python scripts/build_episodes.py --episodes episodes --store store --fake-tts
 | `app/` | De PWA: `index.html`, `app.css`, `app.js`, `sw.js`, manifest en iconen |
 | `episodes/` | Eén script per dag (`<datum>.md`) plus op vrijdag de special (`<datum>-vrijdagspecial.md`); `## `-koppen worden hoofdstukken, `### `-koppen subhoofdstukken |
 | `scripts/build_episodes.py` | Tekst → audio → `feed.json` |
+| `scripts/write_episode.py` | Nieuws zoeken en script schrijven via de Anthropic API; controleert het formaat en probeert één keer opnieuw |
+| `prompts/` | De opdracht voor het dagelijkse bulletin en de vrijdagspecial; hier pas je inhoud en bronnen aan |
+| `.github/workflows/write.yml` | Schrijft elke ochtend het script en roept daarna `publish.yml` aan; handmatig te starten met keuze dagelijks, vrijdagspecial, beide of test |
 | `.github/workflows/publish.yml` | Bouwt en publiceert bij elke push |

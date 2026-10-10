@@ -8,6 +8,16 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Correctie 10-10-2026, 10:50: geplande Claude-taken vervangen door GitHub Actions
+
+- **Wat misging (10-10, 07:45)**: de geplande Claude-taak kreeg geen schrijftoegang tot de repo (geplande sessies hebben geen `add_repo`; push geweigerd met HTTP 403 door de git-proxy). Er is geen bulletin gemaakt. Mijn proefpush van 09-10, 16:13 slaagde alleen omdat die in deze chat liep; dat was geen geldige test voor de geplande taak.
+- **Tussenoplossing in een andere chat** (10-10, ochtend): beide taakprompts omgebouwd naar publiceren via Wims pc ("Werk in een map"). Niet in gebruik genomen: geen map gekoppeld.
+- **Bulletin 10-10** handmatig vanuit deze chat geschreven en gepusht (`aeeb4fe`, run #10 groen). Bevat een correctie: start Lombardije 11:00, niet 10:45 (bron WielerFlits en Sporza).
+- **Keuze Wim (10-10)**: "GitHub doet alles zelf". Nieuw (`e589eef`): `write.yml` (dagelijks 05:35 UTC) + `scripts/write_episode.py` + `prompts/dagelijks.md`, `prompts/vrijdagspecial.md`. Model standaard `claude-sonnet-5-5` (te wijzigen met repo-variabele `CLAUDE_MODEL`), tools `web_search_20260318` (max 15) en `web_fetch_20260318` (max 20, 8.000 tokens per pagina). Formaatcontrole met één herkansing. `publish.yml` is nu ook `workflow_call`.
+- **Geplande Claude-taken** `trig_019VJgxZDmvSEiYWn5Ex2eTK` en `trig_01Mnsx2eke7Rfd3u24VMrdgh`: gepauzeerd (niet verwijderd), zodat er geen dubbele afleveringen komen.
+- **Kosten (vermoeden, na een week te meten)**: per run ca. $0,30–0,80 (Sonnet 5.5: $2/$10 per miljoen tokens; zoekopdrachten $10 per 1.000). Ca. €10–25 per maand.
+- **Nog te doen door Wim**: Anthropic API-sleutel aanmaken met tegoed, secret `ANTHROPIC_API_KEY` in GitHub, testrun via Actions → "Schrijf Wielerbulletin" → test.
+
 ## Wijziging 09-10-2026, 21:00: special in clubkleuren De Jonge Renner
 
 - **Bron kleuren**: tenue 2026 zwart met goud (gemeten uit shirtafbeelding op dejongerenner.nl/kleding-2023/, ca. `#B08C40`); clubsite groen `#418648`. Historisch blauw-wit (1936) en rood-wit (1981), niet gebruikt.
