@@ -6,7 +6,8 @@ Elke ochtend om acht uur vijf minuten wielernieuws, voorgelezen als zakelijk nie
 
 | Tijd | Wie | Wat |
 |---|---|---|
-| 07:45 (vrijdag ook 07:25) | Geplande Claude-taken | Zoeken het nieuws, schrijven `episodes/<datum>.md` (en op vrijdag `<datum>-vrijdagspecial.md`) en pushen via Wims pc (`C:\Users\Wim\Documents\Wielerbulletin`, "Werk in een map"). Pc moet aanstaan met de Claude-app open. |
+| 07:45 (vrijdag ook 07:25) | Geplande Claude-taken | Zoeken het nieuws, schrijven `episodes/<datum>.md` (en op vrijdag `<datum>-vrijdagspecial.md`) en zetten het bestand in de map op Wims pc (`C:\Users\Wim\Documents\Wielerbulletin`, "Werk in een map"). Pc moet aanstaan met de Claude-app open. |
+| 07:30–09:00, elke 5 min | Windows Taakplanner → `scripts/push_episodes.bat` | Commit en pusht nieuwe bestanden in `episodes/` (de geplande taak kan op de pc geen git uitvoeren). Logboek: `pc_push.log`. |
 | reserve | GitHub Action `write.yml` | Schrijft hetzelfde via de Anthropic API. Schema staat uit; alleen handmatig te starten (vereist secret `ANTHROPIC_API_KEY`). |
 | ± 07:50 | `publish.yml` (bij elke push, of aangeroepen door `write.yml`) | Spreekt elk hoofdstuk in met ElevenLabs (`eleven_v4`), voegt samen, berekent hoofdstuktijden en golfvorm, schrijft `feed.json` en publiceert naar GitHub Pages |
 | 08:00 | De app | Haalt `feed.json` op en zet het nieuwe bulletin klaar |
@@ -38,6 +39,16 @@ Zelf een script schrijven of corrigeren kan altijd: zet het bestand in `episodes
 5. **Eerste run**: Actions → *Publiceer Wielerbulletin* → *Run workflow*. Na een paar minuten staat de app op `https://wim1201.github.io/wielerbulletin/`.
 6. **Op de iPhone**: open die link in Safari → Deel-knop → *Zet op beginscherm*.
 7. **Claude-toegang tot de repo**: de geplande taak moet kunnen pushen. Controleer dat de Claude GitHub-app toegang heeft tot `wielerbulletin` (claude.ai → Instellingen → Connectors → GitHub). De taak meldt het als dat niet lukt.
+
+## Pc-push instellen (eenmalig)
+
+Open de **Opdrachtprompt** (niet Git Bash) en voer uit:
+
+```
+schtasks /Create /TN "Wielerbulletin push" /TR "C:\Users\Wim\Documents\Wielerbulletin\scripts\push_episodes.bat" /SC DAILY /ST 07:30 /RI 5 /DU 01:30 /F
+```
+
+Testen: `schtasks /Run /TN "Wielerbulletin push"` en daarna `pc_push.log` bekijken (staat er niets nieuws, dan blijft het logboek leeg).
 
 ## Kosten
 

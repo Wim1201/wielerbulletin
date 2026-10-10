@@ -2,3 +2,4 @@ store/
 _site/
 __pycache__/
 .env
+pc_push.log
