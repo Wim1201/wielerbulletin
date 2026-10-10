@@ -8,6 +8,9 @@ on:
     branches: [main]
     paths: ["episodes/**", "app/**", "scripts/**", ".github/workflows/**"]
   workflow_dispatch:
+  # called by write.yml after it committed a new script (a push made with
+  # GITHUB_TOKEN does not trigger this workflow by itself)
+  workflow_call:
 
 permissions:
   contents: write
@@ -27,6 +30,8 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # when called from write.yml: include the script it just pushed
 
       - name: Haal audio-opslag op
         env:

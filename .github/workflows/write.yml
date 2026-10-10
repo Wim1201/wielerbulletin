@@ -1,0 +1,121 @@
+# Writes the daily bulletin (and on Fridays the special) with the Anthropic API,
+# commits the script and then runs publish.yml to render audio and deploy the app.
+# Replaces the Claude scheduled tasks, which cannot push to GitHub.
+name: Schrijf Wielerbulletin
+
+on:
+  schedule:
+    # 05:35 UTC = 07:35 Dutch summer time, 06:35 winter time.
+    # GitHub may start scheduled runs 5-20 minutes late.
+    - cron: "35 5 * * *"
+  workflow_dispatch:
+    inputs:
+      soort:
+        description: "Welke aflevering"
+        type: choice
+        options: [automatisch, dagelijks, vrijdagspecial, beide, test]
+        default: automatisch
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: wielerbulletin-write
+  cancel-in-progress: false
+
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installeer Anthropic SDK
+        run: pip install -q "anthropic>=1.13"
+
+      - name: Bepaal welke afleveringen
+        id: plan
+        env:
+          SOORT: ${{ inputs.soort || 'automatisch' }}
+        run: |
+          weekday=$(TZ=Europe/Amsterdam date +%u)   # 5 = Friday
+          daily=false; special=false
+          case "$SOORT" in
+            dagelijks) daily=true ;;
+            vrijdagspecial) special=true ;;
+            beide) daily=true; special=true ;;
+            test) ;;
+            *) daily=true; [ "$weekday" = "5" ] && special=true ;;
+          esac
+          echo "daily=$daily" >> "$GITHUB_OUTPUT"
+          echo "special=$special" >> "$GITHUB_OUTPUT"
+          echo "Dagelijks: $daily, vrijdagspecial: $special"
+
+      - name: Test (schrijft het bulletin van vandaag in de log, publiceert niets)
+        if: inputs.soort == 'test'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+        run: python scripts/write_episode.py --kind dagelijks --dry-run
+
+      - name: Schrijf dagelijks bulletin
+        id: daily
+        if: steps.plan.outputs.daily == 'true'
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+        run: python scripts/write_episode.py --kind dagelijks > daily-sources.txt
+
+      - name: Schrijf vrijdagspecial
+        id: special
+        if: steps.plan.outputs.special == 'true'
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+        run: python scripts/write_episode.py --kind vrijdagspecial > special-sources.txt
+
+      - name: Commit en push
+        id: commit
+        run: |
+          git config user.name "wielerbulletin-bot"
+          git config user.email "wielerbulletin-bot@users.noreply.github.com"
+          if [ -z "$(git status --porcelain episodes/)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"; echo "Geen nieuwe scripts."; exit 0
+          fi
+          git add episodes/
+          {
+            echo "Afleveringen $(TZ=Europe/Amsterdam date +%d-%m-%Y) (automatisch)"
+            echo
+            cat daily-sources.txt special-sources.txt 2>/dev/null || true
+          } > msg.txt
+          git commit -q -F msg.txt
+          for i in 1 2 3; do
+            git pull -q --rebase origin main && git push -q origin HEAD:main && break
+            sleep 5
+          done
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Meld mislukte scripts
+        if: steps.daily.outcome == 'failure' || steps.special.outcome == 'failure'
+        run: |
+          echo "::error::Een script kon niet worden geschreven (dagelijks: ${{ steps.daily.outcome }}, special: ${{ steps.special.outcome }}). Zie de log hierboven."
+          exit 1
+
+  publish:
+    needs: write
+    # also publish when only one of two scripts failed
+    if: always() && needs.write.outputs.changed == 'true'
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
