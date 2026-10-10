@@ -8,6 +8,12 @@
 | Van / aan | Claude → Wim |
 | Vervolg op | — |
 
+## Wijziging 10-10-2026, 11:25: toch eerst via de pc
+
+- **Keuze Wim (11:20)**: beginnen met alleen de pc-route. Geplande Claude-taken `trig_019VJgxZDmvSEiYWn5Ex2eTK` (dagelijks 07:45) en `trig_01Mnsx2eke7Rfd3u24VMrdgh` (vrijdag 07:25) weer aangezet; hun instructies publiceren via Wims lokale clone.
+- **`write.yml`**: schema uitgezet (in commentaar), handmatig starten blijft mogelijk als reserve. Blijft de pc-route haperen, dan kan het schema terug.
+- **Door Wim te doen**: bij beide taken "Werk in een map" → `C:\Users\Wim\Documents\Wielerbulletin`; pc 's ochtends wakker en Claude-desktopapp open; slaapstand uit rond 07:25–08:00.
+
 ## Correctie 10-10-2026, 10:50: geplande Claude-taken vervangen door GitHub Actions
 
 - **Wat misging (10-10, 07:45)**: de geplande Claude-taak kreeg geen schrijftoegang tot de repo (geplande sessies hebben geen `add_repo`; push geweigerd met HTTP 403 door de git-proxy). Er is geen bulletin gemaakt. Mijn proefpush van 09-10, 16:13 slaagde alleen omdat die in deze chat liep; dat was geen geldige test voor de geplande taak.

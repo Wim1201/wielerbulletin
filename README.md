@@ -6,8 +6,9 @@ Elke ochtend om acht uur vijf minuten wielernieuws, voorgelezen als zakelijk nie
 
 | Tijd | Wie | Wat |
 |---|---|---|
-| 07:35 (zomertijd) | GitHub Action `write.yml` | Zoekt via de Anthropic API (web search en web fetch) het wielernieuws en schrijft `episodes/<datum>.md`; op vrijdag ook `episodes/<datum>-vrijdagspecial.md`. Commit en pusht. |
-| ± 07:45 | `publish.yml` (aangeroepen door `write.yml`) | Spreekt elk hoofdstuk in met ElevenLabs (`eleven_v4`), voegt samen, berekent hoofdstuktijden en golfvorm, schrijft `feed.json` en publiceert naar GitHub Pages |
+| 07:45 (vrijdag ook 07:25) | Geplande Claude-taken | Zoeken het nieuws, schrijven `episodes/<datum>.md` (en op vrijdag `<datum>-vrijdagspecial.md`) en pushen via Wims pc (`C:\Users\Wim\Documents\Wielerbulletin`, "Werk in een map"). Pc moet aanstaan met de Claude-app open. |
+| reserve | GitHub Action `write.yml` | Schrijft hetzelfde via de Anthropic API. Schema staat uit; alleen handmatig te starten (vereist secret `ANTHROPIC_API_KEY`). |
+| ± 07:50 | `publish.yml` (bij elke push, of aangeroepen door `write.yml`) | Spreekt elk hoofdstuk in met ElevenLabs (`eleven_v4`), voegt samen, berekent hoofdstuktijden en golfvorm, schrijft `feed.json` en publiceert naar GitHub Pages |
 | 08:00 | De app | Haalt `feed.json` op en zet het nieuwe bulletin klaar |
 
 De ElevenLabs- en Anthropic-sleutels staan alleen als secret in GitHub.

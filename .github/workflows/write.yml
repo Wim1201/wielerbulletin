@@ -4,10 +4,11 @@
 name: Schrijf Wielerbulletin
 
 on:
-  schedule:
-    # 05:35 UTC = 07:35 Dutch summer time, 06:35 winter time.
-    # GitHub may start scheduled runs 5-20 minutes late.
-    - cron: "35 5 * * *"
+  # Schedule switched off on 10-10-2026: the scripts are written by the Claude
+  # scheduled tasks via Wim's PC. To make GitHub write them every morning again,
+  # restore these three lines (05:35 UTC = 07:35 summer time, 06:35 winter time):
+  # schedule:
+  #   - cron: "35 5 * * *"
   workflow_dispatch:
     inputs:
       soort:
