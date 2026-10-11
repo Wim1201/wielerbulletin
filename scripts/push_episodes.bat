@@ -7,7 +7,8 @@ cd /d "%~dp0.."
 set LOG=pc_push.log
 
 rem 1. Nieuwe of gewijzigde afleveringen committen (alleen episodes\*.md)
-git status --porcelain -- episodes | findstr /r "\.md$" >nul
+rem (geen findstr-regex met $: die werkt niet op de LF-uitvoer van git)
+git status --porcelain -- episodes | findstr /i /c:".md" >nul
 if not errorlevel 1 (
   echo %date% %time%  nieuwe aflevering gevonden>>%LOG%
   git add -- "episodes/*.md" >>%LOG% 2>&1
